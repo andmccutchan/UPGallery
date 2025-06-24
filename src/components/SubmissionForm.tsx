@@ -1,91 +1,38 @@
 import { supabase } from "@/supabase-client";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const SubmissionForm = () => {
-  const [title, setTitle] = useState("");
-  const [distribution, setDistribution] = useState("");
-  const [description, setDescription] = useState("");
-  const [images, setImages] = useState<File | null>(null);
-  //   const [tags, setTags] = useState([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const uploadFile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!images) {
-      alert("Please select an image");
+    if (!imageFile) {
+      console.error("No file selected");
       return;
     }
 
-    const fileExt = images.name.split(".").pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-    const filePath = `${fileName}`;
+    const {data, error} = await supabase.storage
+      .from('rice-images')
+      .upload('test file', imageFile)
 
-    const { error: uploadError } = await supabase.storage
-      .from("rice-images")
-      .upload(filePath, images);
-
-    if (uploadError) {
-      console.error("Upload failed:", uploadError);
-      return;
-    }
-
-    const { data: publicUrlData } = supabase.storage
-      .from("rice-images")
-      .getPublicUrl(filePath);
-
-    const publicUrl = publicUrlData.publicUrl;
-
-    const { error: insertError } = await supabase.from("rice-info").insert([
-      {
-        title,
-        distribution,
-        description,
-        images: [publicUrl],
-      },
-    ]);
-
-    if (insertError) {
-      console.error("Insert error:", insertError);
+    if (error) {
+      console.error("File upload error:", error);
     } else {
-      alert("Post submitted!");
-      setTitle("");
-      setDescription("");
-      setDistribution("");
-      setImages(null);
+      console.log("Upload successful:", data);
     }
-  };
+    setImageFile(null);
+  }
 
-  return (
-    <form className="border" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
-      />
-      <input
-        type="text"
-        value={distribution}
-        onChange={(e) => setDistribution(e.target.value)}
-        placeholder="Distro"
-      />
-      <input
-        type="text"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Description (optional)"
-      />
-      <input
-        type="file"
-        accept="imagge/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) setImages(file);
-        }}
-      />
-      <button type="submit">Submit</button>
+  return <> 
+    <form className="border rounded-2xl p-4" onSubmit={uploadFile}>
+      <input type="file" onChange={(e) => {
+        const file = e.target.files?.[0];
+        if (file) setImageFile(file);
+       }}/>
+       <button type="submit">Upload</button>
     </form>
-  );
+  </>;
 };
 
 export default SubmissionForm;
