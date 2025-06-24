@@ -5,33 +5,54 @@ const SubmissionForm = () => {
   const [title, setTitle] = useState("");
   const [distribution, setDistribution] = useState("");
   const [description, setDescription] = useState("");
-  //   const [images, setImages] = useState([]);
+  const [images, setImages] = useState<File | null>(null);
   //   const [tags, setTags] = useState([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { error, data } = await supabase
-      .from("rice-info")
-      .insert([
-        {
-          title,
-          distribution,
-          description,
-          // images,
-          // tags,
-        },
-      ])
-      .select()
-      .single();
+    if (!images) {
+      alert("Please select an image");
+      return;
+    }
 
-    console.log({ data, error });
-    setTitle("");
-    setDescription("");
-    setDistribution("");
+    const fileExt = images.name.split(".").pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-    if (error) console.error(error);
-    else alert("Post submitted!");
+    const { error: uploadError } = await supabase.storage
+      .from("rice-images")
+      .upload(filePath, images);
+
+    if (uploadError) {
+      console.error("Upload failed:", uploadError);
+      return;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from("rice-images")
+      .getPublicUrl(filePath);
+
+    const publicUrl = publicUrlData.publicUrl;
+
+    const { error: insertError } = await supabase.from("rice-info").insert([
+      {
+        title,
+        distribution,
+        description,
+        images: [publicUrl],
+      },
+    ]);
+
+    if (insertError) {
+      console.error("Insert error:", insertError);
+    } else {
+      alert("Post submitted!");
+      setTitle("");
+      setDescription("");
+      setDistribution("");
+      setImages(null);
+    }
   };
 
   return (
@@ -53,6 +74,14 @@ const SubmissionForm = () => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Description (optional)"
+      />
+      <input
+        type="file"
+        accept="imagge/*"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) setImages(file);
+        }}
       />
       <button type="submit">Submit</button>
     </form>

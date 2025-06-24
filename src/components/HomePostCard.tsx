@@ -19,6 +19,7 @@ type HomePostCardProps = {
   title: string;
   distribution: string;
   description: string;
+  image: string;
   //   images: Array<string>;
   //   profilePhoto: string;
   //   userName: string;
@@ -28,6 +29,7 @@ const HomePostCard = ({
   title,
   description,
   distribution,
+  image,
 }: //   images,
 //   profilePhoto,
 //   userName,

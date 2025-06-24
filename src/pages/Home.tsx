@@ -44,6 +44,7 @@ const Home = () => {
     title: string;
     distribution: string;
     description: string;
+    image: string;
   };
   const [posts, setPosts] = useState<RicePost[]>([]);
 
