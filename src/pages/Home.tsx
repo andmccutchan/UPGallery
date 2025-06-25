@@ -1,5 +1,6 @@
 import HomePostCard from "@/components/HomePostCard";
 import SubmissionForm from "@/components/SubmissionForm";
+import TestForm from "@/components/TestForm";
 import { supabase } from "@/supabase-client";
 import { useEffect, useState } from "react";
 
@@ -74,6 +75,7 @@ const Home = () => {
         />
       ))}
       <SubmissionForm />
+      <TestForm />
     </div>
   );
 };
