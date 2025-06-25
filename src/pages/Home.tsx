@@ -44,7 +44,7 @@ const Home = () => {
   type RicePost = {
     distro: string;
     description: string;
-    images: [];
+    imageUrl: string[];
   };
   const [posts, setPosts] = useState<RicePost[]>([]);
 
@@ -63,6 +63,8 @@ const Home = () => {
     fetchRices();
   }, []);
 
+  console.log(posts);
+
   return (
     <div id="card-section" className="container grid grid-cols-3 gap-4 mx-auto">
       {posts.map((post, index) => (
@@ -70,7 +72,7 @@ const Home = () => {
           key={index}
           distro={post.distro}
           description={post.description}
-          images={post.images || []}
+          images={post.imageUrl}
         />
       ))}
       {/* <SubmissionForm /> */}

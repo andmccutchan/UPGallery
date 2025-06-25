@@ -17,10 +17,11 @@ import {
 type HomePostCardProps = {
   distro: string;
   description: string;
-  images: [];
+  images: string[];
 };
 
 const HomePostCard = ({ distro, description, images }: HomePostCardProps) => {
+  console.log(images);
   return (
     <Card className="p-8">
       <CardHeader>
