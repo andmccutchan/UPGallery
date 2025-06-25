@@ -13,43 +13,29 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type HomePostCardProps = {
-  title: string;
-  distribution: string;
+  distro: string;
   description: string;
-  image: string;
-  //   images: Array<string>;
-  //   profilePhoto: string;
-  //   userName: string;
+  images: [];
 };
 
-const HomePostCard = ({
-  title,
-  description,
-  distribution,
-  image,
-}: //   images,
-//   profilePhoto,
-//   userName,
-HomePostCardProps) => {
+const HomePostCard = ({ distro, description, images }: HomePostCardProps) => {
   return (
     <Card className="p-8">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{distribution}</CardDescription>
+        <CardTitle>{distro}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col">
-          <p className="mb-2">{description}</p>
           <Carousel>
             <CarouselContent>
-              {/* {images.map((_, index) => (
+              {images.map((image, index) => (
                 <CarouselItem key={index}>
-                  <img className="rounded-sm" src={images[index]} />
+                  <img className="rounded-sm" src={image} />
                 </CarouselItem>
-              ))} */}
+              ))}
             </CarouselContent>
             <CarouselNext />
             <CarouselPrevious />
@@ -57,13 +43,7 @@ HomePostCardProps) => {
         </div>
       </CardContent>
       <CardFooter>
-        {/* <div className="flex w-full items-center">
-          <Avatar>
-            <AvatarImage src={profilePhoto} />
-            <AvatarFallback />
-          </Avatar>
-          <p className="px-2">{userName}</p>
-        </div> */}
+        <p>footer</p>
       </CardFooter>
     </Card>
   );

@@ -10,6 +10,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -29,6 +30,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
+import { fi } from "zod/v4/locales";
+import { supabase } from "@/supabase-client";
+import { UNSAFE_RemixErrorBoundary } from "react-router-dom";
 
 const distributions = [
   {
@@ -62,7 +66,13 @@ const distributions = [
 ];
 
 const formSchema = z.object({
-  distro: z.string(),
+  distro: z.string().min(1, "Please select a distro"),
+  description: z
+    .string()
+    .min(1, "Please give a brief description of your rice"),
+  images: z.any().refine((files) => files && files.length > 0, {
+    message: "Please upload at least one image",
+  }),
 });
 
 const TestForm = () => {
@@ -73,12 +83,69 @@ const TestForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       distro: "",
+      description: "",
+      images: undefined,
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const fileList = values.images as FileList;
+
+    if (!fileList || fileList.length === 0) {
+      console.error("No files uploaded");
+      return;
+    }
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("User not logged in");
+      return;
+    }
+
+    const userId = user.id;
+
+    // Upload all files and collect their public URLs
+    const uploadResults = await Promise.all(
+      Array.from(fileList).map(async (file) => {
+        const filePath = `${userId}/${Date.now()}-${file.name}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("rice-images")
+          .upload(filePath, file);
+
+        if (uploadError) {
+          console.error(`Error uploading ${file.name}:`, uploadError.message);
+          return null;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("rice-images")
+          .getPublicUrl(filePath);
+
+        return publicUrlData?.publicUrl ?? null;
+      })
+    );
+
+    const imageUrl = uploadResults.filter((url) => url !== null);
+
+    const { error: insertError } = await supabase.from("rice-info").insert({
+      distro: values.distro,
+      description: values.description,
+      imageUrl: imageUrl,
+      user_id: userId,
+    });
+
+    if (insertError) {
+      console.error("Error inserting into database:", insertError.message);
+    } else {
+      console.log("All files uploaded and metadata inserted!");
+    }
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -119,9 +186,10 @@ const TestForm = () => {
                               key={distribution.value}
                               value={distribution.value}
                               onSelect={(currentValue) => {
-                                setValue(
-                                  currentValue === value ? "" : currentValue
-                                );
+                                const newValue =
+                                  currentValue === value ? "" : currentValue;
+                                setValue(newValue);
+                                field.onChange(newValue);
                                 setOpen(false);
                               }}
                             >
@@ -145,6 +213,40 @@ const TestForm = () => {
               <FormDescription>
                 This is your public display name.
               </FormDescription>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Input placeholder="Description..." {...field} />
+              </FormControl>
+              <FormDescription>
+                A brief description of your rice
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="images"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Images</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  multiple
+                  onChange={(e) => {
+                    field.onChange(e.target.files);
+                  }}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

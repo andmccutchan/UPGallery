@@ -42,10 +42,9 @@ import { useEffect, useState } from "react";
 
 const Home = () => {
   type RicePost = {
-    title: string;
-    distribution: string;
+    distro: string;
     description: string;
-    image: string;
+    images: [];
   };
   const [posts, setPosts] = useState<RicePost[]>([]);
 
@@ -66,15 +65,15 @@ const Home = () => {
 
   return (
     <div id="card-section" className="container grid grid-cols-3 gap-4 mx-auto">
-      {posts.map((_, index) => (
+      {posts.map((post, index) => (
         <HomePostCard
           key={index}
-          title={posts[index].title}
-          distribution={posts[index].distribution}
-          description={posts[index].description}
+          distro={post.distro}
+          description={post.description}
+          images={post.images || []}
         />
       ))}
-      <SubmissionForm />
+      {/* <SubmissionForm /> */}
       <TestForm />
     </div>
   );
