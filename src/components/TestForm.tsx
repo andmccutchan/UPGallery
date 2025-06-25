@@ -30,9 +30,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
-import { fi } from "zod/v4/locales";
 import { supabase } from "@/supabase-client";
-import { UNSAFE_RemixErrorBoundary } from "react-router-dom";
 
 const distributions = [
   {
@@ -183,8 +181,8 @@ const TestForm = () => {
                         <CommandGroup>
                           {distributions.map((distribution) => (
                             <CommandItem
-                              key={distribution.value}
-                              value={distribution.value}
+                              key={distribution.label}
+                              value={distribution.label}
                               onSelect={(currentValue) => {
                                 const newValue =
                                   currentValue === value ? "" : currentValue;
