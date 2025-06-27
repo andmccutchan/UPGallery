@@ -73,7 +73,7 @@ const formSchema = z.object({
   }),
 });
 
-const TestForm = () => {
+const SubmissionForm = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
 
@@ -152,7 +152,7 @@ const TestForm = () => {
           name="distro"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Distro</FormLabel>
               <FormControl>
                 <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
@@ -254,4 +254,4 @@ const TestForm = () => {
   );
 };
 
-export default TestForm;
+export default SubmissionForm;

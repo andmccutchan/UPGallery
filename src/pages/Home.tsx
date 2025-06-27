@@ -1,5 +1,5 @@
 import HomePostCard from "@/components/HomePostCard";
-import TestForm from "@/components/TestForm";
+import SubmissionForm from "@/components/SubmissionForm";
 import { supabase } from "@/supabase-client";
 import { useEffect, useState } from "react";
 
@@ -54,15 +54,12 @@ const Home = () => {
       if (error) {
         console.error(error);
       } else {
-        console.log("Fetched data:", data);
         setPosts(data);
       }
     };
 
     fetchRices();
   }, []);
-
-  console.log(posts);
 
   return (
     <div id="card-section" className="container grid grid-cols-3 gap-4 mx-auto">
@@ -74,8 +71,7 @@ const Home = () => {
           images={post.imageUrl}
         />
       ))}
-      {/* <SubmissionForm /> */}
-      <TestForm />
+      <SubmissionForm />
     </div>
   );
 };

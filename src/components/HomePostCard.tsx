@@ -13,6 +13,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Badge } from "@/components/ui/badge";
 
 type HomePostCardProps = {
   distro: string;
@@ -21,7 +22,6 @@ type HomePostCardProps = {
 };
 
 const HomePostCard = ({ distro, description, images }: HomePostCardProps) => {
-  console.log(images);
   return (
     <Card className="p-8">
       <CardHeader>
@@ -44,7 +44,8 @@ const HomePostCard = ({ distro, description, images }: HomePostCardProps) => {
         </div>
       </CardContent>
       <CardFooter>
-        <p>footer</p>
+        {}
+        <Badge className="bg-slate-500">{distro}</Badge>
       </CardFooter>
     </Card>
   );
