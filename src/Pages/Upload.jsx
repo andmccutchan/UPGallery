@@ -1,7 +1,7 @@
 import React from "react";
 
 const Upload = () => {
-  return <div>Upload</div>;
+  return <div className="text-stone-200">Upload</div>;
 };
 
 export default Upload;
