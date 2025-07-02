@@ -1,0 +1,7 @@
+Colors
+
+Slate-950
+Slate-800
+Zinc-500
+Stone-400
+Stone-200
