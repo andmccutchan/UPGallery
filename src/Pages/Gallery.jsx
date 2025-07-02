@@ -1,7 +1,12 @@
 import React from "react";
+import SearchBar from "../Components/SearchBar";
 
 const Gallery = () => {
-  return <div className="text-stone-200">Gallery</div>;
+  return (
+    <>
+      <SearchBar />
+    </>
+  );
 };
 
 export default Gallery;
