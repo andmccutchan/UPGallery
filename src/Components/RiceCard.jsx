@@ -1,9 +1,9 @@
 import React from "react";
 
-const RiceCard = () => {
+const RiceCard = ({ title, distro, badges }) => {
   return (
     <>
-      <div></div>
+      <div className="border"></div>
     </>
   );
 };
